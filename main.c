@@ -79,12 +79,14 @@ int pesquisarNaArvore (int rgm, t_no * raiz) {
   
 }
 
-t_no* encontrarSucessor(t_no* no) {
-  t_no* atual = no->dir;
+t_no * encontrarSucessor(t_no *raiz) {
+  if (raiz == NULL) return NULL;
+
+  t_no *atual = raiz;
   while (atual->esq != NULL) {
     atual = atual->esq;
   }
-  
+
   return atual;
 }
 
@@ -183,7 +185,7 @@ void menu(t_arvore raiz) {
       } else {
         printf("Digite o RGM: ");
         scanf("%d", &rgm);
-        removerValor(&raiz, rgm);
+        removerValor(raiz, rgm);
       }
 
       menu(raiz);
