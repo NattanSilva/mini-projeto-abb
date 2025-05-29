@@ -89,42 +89,52 @@ t_no* encontrarSucessor(t_no* no) {
 }
 
 // Função para remover um valor da arvore
-t_no * removerValor(t_no * raiz, int rgm) {
+void removerValor(t_no * raiz, int valor) {
   if (raiz == NULL) {
-    return NULL;
+    printf("Valor não encontrado na árvore.\n");
+    return;
   }
 
-  if (rgm < raiz->dado) {
-    raiz->esq = removerValor(raiz->esq, rgm);
-  } else if (rgm > raiz->dado) {
-    raiz->dir = removerValor(raiz->dir, rgm);
+  if(pesquisarNaArvore(valor, raiz) < 0) {
+    printf("Valor nao encontrado na arvore\n");
+    return;
+  }
+
+  if(valor < 0) {
+    printf("Valor invalido\n");
+    return;
+  }
+
+  if (valor < raiz->dado) {
+    removerValor(raiz->esq, valor);
+  } else if (valor > raiz->dado) {
+    removerValor(raiz->dir, valor);
   } else {
     // Caso 1: Nó sem filhos
     if (raiz->esq == NULL && raiz->dir == NULL) {
+      printf("Valor removido: %d\n", raiz->dado);
       free(raiz);
-      return NULL;
     }
-    
+
     // Caso 2: Nó com um filho
     if (raiz->esq == NULL) {
-      t_no * temp = raiz->dir;
+      printf("Valor removido: %d\n", raiz->dado);
+      t_no* temp = raiz->dir;
       free(raiz);
-      return temp;
+      raiz = temp;
     }
-      
     if (raiz->dir == NULL) {
-      t_no * temp = raiz->esq;
+      printf("Valor removido: %d\n", raiz->dado);
+      t_no* temp = raiz->esq;
       free(raiz);
-      return temp;
+      raiz = temp;
     }
 
     // Caso 3: Nó com dois filhos
-    t_no * sucessor = encontrarSucessor(raiz);
+    t_no* sucessor = encontrarSucessor(raiz);
     raiz->dado = sucessor->dado;
-    raiz->dir = removerValor(raiz->dir, sucessor->dado);
+    removerValor(raiz->dir, sucessor->dado);
   }
-    
-  return raiz;
 }
   
 void menu(t_arvore raiz) {
