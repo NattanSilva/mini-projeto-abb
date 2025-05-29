@@ -89,51 +89,52 @@ t_no* encontrarSucessor(t_no* no) {
 }
 
 // Função para remover um valor da arvore
-void removerValor(t_no * raiz, int valor) {
-  if (raiz == NULL) {
+void removerValor(t_no ** raiz, int valor) {
+  if (*raiz == NULL) {
     printf("Valor não encontrado na árvore.\n");
     return;
   }
 
-  if(pesquisarNaArvore(valor, raiz) < 0) {
-    printf("Valor nao encontrado na arvore\n");
+  if (valor < 0) {
+    printf("Valor inválido\n");
     return;
   }
 
-  if(valor < 0) {
-    printf("Valor invalido\n");
-    return;
-  }
-
-  if (valor < raiz->dado) {
-    removerValor(raiz->esq, valor);
-  } else if (valor > raiz->dado) {
-    removerValor(raiz->dir, valor);
+  if (valor < (*raiz)->dado) {
+    removerValor(&((*raiz)->esq), valor);
+  } else if (valor > (*raiz)->dado) {
+    removerValor(&((*raiz)->dir), valor);
   } else {
-    // Caso 1: Nó sem filhos
-    if (raiz->esq == NULL && raiz->dir == NULL) {
-      printf("Valor removido: %d\n", raiz->dado);
-      free(raiz);
+    // Encontrou o nó a ser removido
+    t_no *no = *raiz;
+
+    // Caso 1: Sem filhos
+    if (no->esq == NULL && no->dir == NULL) {
+      printf("Valor removido: %d\n", no->dado);
+      free(no);
+      *raiz = NULL;
     }
 
-    // Caso 2: Nó com um filho
-    if (raiz->esq == NULL) {
-      printf("Valor removido: %d\n", raiz->dado);
-      t_no* temp = raiz->dir;
-      free(raiz);
-      raiz = temp;
-    }
-    if (raiz->dir == NULL) {
-      printf("Valor removido: %d\n", raiz->dado);
-      t_no* temp = raiz->esq;
-      free(raiz);
-      raiz = temp;
+    // Caso 2: Um filho à direita
+    else if (no->esq == NULL) {
+      printf("Valor removido: %d\n", no->dado);
+      *raiz = no->dir;
+      free(no);
     }
 
-    // Caso 3: Nó com dois filhos
-    t_no* sucessor = encontrarSucessor(raiz);
-    raiz->dado = sucessor->dado;
-    removerValor(raiz->dir, sucessor->dado);
+    // Caso 2: Um filho à esquerda
+    else if (no->dir == NULL) {
+      printf("Valor removido: %d\n", no->dado);
+      *raiz = no->esq;
+      free(no);
+    }
+
+    // Caso 3: Dois filhos
+    else {
+      t_no *sucessor = encontrarSucessor(no->dir);
+      no->dado = sucessor->dado;
+      removerValor(&(no->dir), sucessor->dado);
+    }
   }
 }
   
@@ -182,7 +183,7 @@ void menu(t_arvore raiz) {
       } else {
         printf("Digite o RGM: ");
         scanf("%d", &rgm);
-        removerValor(raiz, rgm);
+        removerValor(&raiz, rgm);
       }
 
       menu(raiz);
