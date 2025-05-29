@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 typedef struct {
   int rgm;
@@ -28,7 +29,12 @@ t_no * criarNo () {
 
 int inserirNaArvore (int rgm, t_no * raiz) {
   if(raiz == NULL) {
-    printf("Nó inválido ou nulo\n");
+    printf("No invalido ou nulo\n");
+    return -1;
+  }
+
+  if(rgm < 0) {
+    printf("RGM invalido\n");
     return -1;
   }
 
@@ -51,7 +57,7 @@ int inserirNaArvore (int rgm, t_no * raiz) {
       return inserirNaArvore(rgm, raiz->esq);
     }
   } else {
-    printf("RGM %d já existe na árvore\n", rgm);
+    printf("RGM %d ja existe na arvore\n", rgm);
     return 0;
   }
 
@@ -72,6 +78,54 @@ int pesquisarNaArvore (int rgm, t_no * raiz) {
   }
   
 }
+
+t_no* encontrarSucessor(t_no* no) {
+  t_no* atual = no->dir;
+  while (atual->esq != NULL) {
+    atual = atual->esq;
+  }
+  
+  return atual;
+}
+
+// Função para remover um valor da arvore
+t_no * removerValor(t_no * raiz, int rgm) {
+  if (raiz == NULL) {
+    return NULL;
+  }
+
+  if (rgm < raiz->dado) {
+    raiz->esq = removerValor(raiz->esq, rgm);
+  } else if (rgm > raiz->dado) {
+    raiz->dir = removerValor(raiz->dir, rgm);
+  } else {
+    // Caso 1: Nó sem filhos
+    if (raiz->esq == NULL && raiz->dir == NULL) {
+      free(raiz);
+      return NULL;
+    }
+    
+    // Caso 2: Nó com um filho
+    if (raiz->esq == NULL) {
+      t_no * temp = raiz->dir;
+      free(raiz);
+      return temp;
+    }
+      
+    if (raiz->dir == NULL) {
+      t_no * temp = raiz->esq;
+      free(raiz);
+      return temp;
+    }
+
+    // Caso 3: Nó com dois filhos
+    t_no * sucessor = encontrarSucessor(raiz);
+    raiz->dado = sucessor->dado;
+    raiz->dir = removerValor(raiz->dir, sucessor->dado);
+  }
+    
+  return raiz;
+}
   
 void menu(t_arvore raiz) {
   int opcao = 0, rgm = 0;
@@ -81,25 +135,26 @@ void menu(t_arvore raiz) {
   printf("DISCIPLINA: ESTRUTURA DE DADOS I\n");
   printf("PROFESSOR: WALACE BONFIM\n\n");
   printf("----------EDITOR DE ÁRVORE----------\n");
-  printf("1 – INSERIR – fornecer RGM e Nome\n");
-  printf("2 – REMOVER UM NÓ – fornecer o RGM a remover\n");
-  printf("3 – PESQUISAR – fornecer o RGM a pesquisar\n");
-  printf("4 – ESVAZIAR A ÁRVORE\n");
-  printf("5 – EXIBIR A ÁRVORE – três opções: PRÉ, IN ou PÓS\n");
-  printf("0 – SAIR\n");
+  printf("1 - INSERIR - fornecer RGM e Nome\n");
+  printf("2 - REMOVER UM NO - fornecer o RGM a remover\n");
+  printf("3 - PESQUISAR - fornecer o RGM a pesquisar\n");
+  printf("4 - ESVAZIAR A ARVORE\n");
+  printf("5 - EXIBIR A ARVORE - tres opcoes: PRE, IN ou POS\n");
+  printf("0 - SAIR\n");
   printf("------------------------------------\n");
-  printf("DIGITE SUA OPÇÃO: ");
+  printf("DIGITE SUA OPCAO: ");
   scanf("%d", &opcao);
   fflush(stdin);
 
   switch (opcao) {
     case 1:
       printf("------------------------------------\n");
-      printf("INSERIR UM NÓ\n");
+      printf("INSERIR UM NO\n");
       printf("Digite o RGM: ");
       scanf("%d", &rgm);
       
-      if(raiz->dado < 0) {
+      if(raiz == NULL) {
+        raiz = criarNo();
         raiz->dado = rgm;
         printf("RGM %d inserido na raiz com sucesso\n", rgm);
       }else {
@@ -110,30 +165,40 @@ void menu(t_arvore raiz) {
       break;
     case 2:
       printf("------------------------------------\n");
-      printf("REMOVER UM NÓ\n");
+      printf("REMOVER UM NO\n");
+      
+      if(raiz == NULL) {
+        printf("Arvore vazia\n");
+      } else {
+        printf("Digite o RGM: ");
+        scanf("%d", &rgm);
+        removerValor(raiz, rgm);
+      }
+
+      menu(raiz);
       break;
     case 3:
       printf("------------------------------------\n");
-      printf("PESQUISAR UM NÓ\n");
+      printf("PESQUISAR UM NO\n");
       printf("Digite o RGM: ");
       scanf("%d", &rgm);
       int valorBuscado = pesquisarNaArvore(rgm, raiz);
 
       if (valorBuscado < 0) {
-        printf("RGM %d não encontrado na árvore\n", rgm);
+        printf("RGM %d nao encontrado na arvore\n", rgm);
       } else {
-        printf("RGM %d encontrado na árvore\n", rgm);
+        printf("RGM %d encontrado na arvore\n", valorBuscado);
       }
 
       menu(raiz);
       break;
     case 4:
       printf("------------------------------------\n");
-      printf("ESVAZIAR A ÁRVORE\n");
+      printf("ESVAZIAR A ARVORE\n");
       break;
     case 5:
       printf("------------------------------------\n");
-      printf("EXIBIR A ÁRVORE\n");
+      printf("EXIBIR A ARVORE\n");
       break;
     case 0:
       printf("------------------------------------\n");
@@ -141,13 +206,14 @@ void menu(t_arvore raiz) {
       break;
     default:
       printf("------------------------------------\n");
-      printf("OPÇÃO INVÁLIDA\n");
+      printf("OPCAO INVALIDA\n");
       menu(raiz);
       break;
   }
 }
 
 int main() {
+  setlocale(LC_ALL, "Portuguese_Brazil");
   FILE *arquivo = fopen("dados.txt", "w");
 
   if(arquivo == NULL) {
@@ -155,7 +221,7 @@ int main() {
     return 1;
   }
 
-  t_arvore raiz = criarNo();
+  t_arvore raiz = NULL;
   menu(raiz);
 
   fclose(arquivo);
