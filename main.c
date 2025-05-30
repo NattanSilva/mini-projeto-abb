@@ -139,6 +139,56 @@ void removerValor(t_no ** raiz, int valor) {
     }
   }
 }
+
+void listagemPreOrdem(t_no * raiz) {
+  if (raiz != NULL) {
+    printf("%d ", raiz->dado);
+    listagemPreOrdem(raiz->esq);
+    listagemPreOrdem(raiz->dir);
+  }
+}
+
+void menuDeListagem(t_arvore raiz) {
+  int opcao = 0;
+  printf("------------------------------------\n");
+  printf("EXIBIR A ARVORE\n");
+  printf("1 - PRE\n");
+  printf("2 - IN\n");
+  printf("3 - POS\n");
+  printf("4 - GRAFICAMENTE\n");
+  printf("Digite a opcao: ");
+  scanf("%d", &opcao);
+  fflush(stdin);
+
+  switch (opcao) {
+    case 1:
+      printf("------------------------------------\n");
+      printf("PRE\n");
+      
+      if(raiz == NULL) {
+        printf("Arvore vazia\n");
+        break;
+      } else {
+        listagemPreOrdem(raiz);
+        printf("\n");
+      }
+      
+      break;
+    case 2:
+      printf("IN\n");
+      break;
+    case 3:
+      printf("POS\n");
+      break;
+    case 4:
+      printf("GRAFICAMENTE\n");
+      break;
+    default:
+      printf("Opcao invalida\n");
+      menuDeListagem(raiz);
+      break;
+  }
+}
   
 void menu(t_arvore raiz) {
   int opcao = 0, rgm = 0;
@@ -185,7 +235,7 @@ void menu(t_arvore raiz) {
       } else {
         printf("Digite o RGM: ");
         scanf("%d", &rgm);
-        removerValor(raiz, rgm);
+        removerValor(&raiz, rgm);
       }
 
       menu(raiz);
@@ -210,8 +260,8 @@ void menu(t_arvore raiz) {
       printf("ESVAZIAR A ARVORE\n");
       break;
     case 5:
-      printf("------------------------------------\n");
-      printf("EXIBIR A ARVORE\n");
+      menuDeListagem(raiz);
+      menu(raiz);
       break;
     case 0:
       printf("------------------------------------\n");
