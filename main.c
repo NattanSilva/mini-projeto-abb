@@ -148,6 +148,22 @@ void listagemPreOrdem(t_no * raiz) {
   }
 }
 
+void listagemInOrdem(t_no * raiz) {
+  if (raiz != NULL) {
+    listagemInOrdem(raiz->esq);
+    printf("%d ", raiz->dado);
+    listagemInOrdem(raiz->dir);
+  }
+}
+
+void listagemPosOrdem(t_no * raiz) {
+  if (raiz != NULL) {
+    listagemPosOrdem(raiz->esq);
+    listagemPosOrdem(raiz->dir);
+    printf("%d ", raiz->dado);
+  }
+}
+
 void menuDeListagem(t_arvore raiz) {
   int opcao = 0;
   printf("------------------------------------\n");
@@ -176,9 +192,27 @@ void menuDeListagem(t_arvore raiz) {
       break;
     case 2:
       printf("IN\n");
+
+      if(raiz == NULL) {
+        printf("Arvore vazia\n");
+        break;
+      } else {
+        listagemInOrdem(raiz);
+        printf("\n");
+      }
+      
       break;
     case 3:
       printf("POS\n");
+
+      if(raiz == NULL) {
+        printf("Arvore vazia\n");
+        break;
+      } else {
+        listagemPosOrdem(raiz);
+        printf("\n");
+      }
+      
       break;
     case 4:
       printf("GRAFICAMENTE\n");
