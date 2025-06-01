@@ -164,6 +164,25 @@ void listagemPosOrdem(t_no * raiz) {
   }
 }
 
+void listagemGraficamente(t_no* raiz, int espaco) {
+  if (raiz == NULL) return;
+
+  espaco += 5;
+
+  // Primeiro desenha o lado direito
+  listagemGraficamente(raiz->dir, espaco);
+
+  // Imprime o nó atual com indentação
+  printf("\n");
+  for (int i = 5; i < espaco; i++) {
+    printf(" ");
+  }
+  
+  printf("%d\n", raiz->dado);
+
+  // Depois desenha o lado esquerdo
+  listagemGraficamente(raiz->esq, espaco);
+}
 void menuDeListagem(t_arvore raiz) {
   int opcao = 0;
   printf("------------------------------------\n");
@@ -212,10 +231,18 @@ void menuDeListagem(t_arvore raiz) {
         listagemPosOrdem(raiz);
         printf("\n");
       }
-      
+
       break;
     case 4:
       printf("GRAFICAMENTE\n");
+
+      if(raiz == NULL) {
+        printf("Arvore vazia\n");
+        break;
+      } else {
+        listagemGraficamente(raiz, 0);
+      }
+
       break;
     default:
       printf("Opcao invalida\n");
