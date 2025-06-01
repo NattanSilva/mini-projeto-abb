@@ -10,7 +10,7 @@ typedef struct {
 
 typedef struct no {
   struct no * esq;
-  int dado;
+  t_elemento dado;
   struct no * dir;
 } t_no;
 
