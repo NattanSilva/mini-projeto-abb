@@ -183,6 +183,7 @@ void listagemGraficamente(t_no* raiz, int espaco) {
   // Depois desenha o lado esquerdo
   listagemGraficamente(raiz->esq, espaco);
 }
+
 void menuDeListagem(t_arvore raiz) {
   int opcao = 0;
   printf("------------------------------------\n");
