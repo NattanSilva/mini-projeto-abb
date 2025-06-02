@@ -20,14 +20,14 @@ t_no * criarNo () {
   t_no * no = (t_no*) malloc(sizeof(t_no));
 
   if (no) {
-    no->dado = -1;
+    no->dado.rgm = -1;
     no->esq = no->dir = NULL;
   }
 
   return no;
 }
 
-int inserirNaArvore (int rgm, t_no * raiz) {
+int inserirNaArvore (int rgm, char *nome, t_no * raiz) {
   if(raiz == NULL) {
     printf("No invalido ou nulo\n");
     return -1;
@@ -38,23 +38,25 @@ int inserirNaArvore (int rgm, t_no * raiz) {
     return -1;
   }
 
-  if(rgm > raiz->dado) {
+  if(rgm > raiz->dado.rgm) {
     if(raiz->dir == NULL) {
       raiz->dir = criarNo();
-      raiz->dir->dado = rgm;
+      raiz->dir->dado.rgm = rgm;
+      strcpy(raiz->dir->dado.nome, nome);
       printf("RGM %d inserido na direita com sucesso\n", rgm);
       return 1;
     } else {
-      return inserirNaArvore(rgm, raiz->dir);
+      return inserirNaArvore(rgm, nome, raiz->dir);
     }
-  } else if(rgm < raiz->dado) {
+  } else if(rgm < raiz->dado.rgm) {
     if(raiz->esq == NULL) {
       raiz->esq = criarNo();
-      raiz->esq->dado = rgm;
+      raiz->esq->dado.rgm = rgm;
+      strcpy(raiz->esq->dado.nome, nome);
       printf("RGM %d inserido na esquerda com sucesso\n", rgm);
       return 1;
     } else {
-      return inserirNaArvore(rgm, raiz->esq);
+      return inserirNaArvore(rgm, nome, raiz->esq);
     }
   } else {
     printf("RGM %d ja existe na arvore\n", rgm);
@@ -65,13 +67,13 @@ int inserirNaArvore (int rgm, t_no * raiz) {
 }
 
 int pesquisarNaArvore (int rgm, t_no * raiz) {
-  if(raiz == NULL || raiz->dado < 0) {
+  if(raiz == NULL || raiz->dado.rgm < 0) {
     return -1;
   }
   
-  if (raiz->dado == rgm) {
-    return raiz->dado;
-  } else if(rgm > raiz->dado) {
+  if (raiz->dado.rgm == rgm) {
+    return raiz->dado.rgm;
+  } else if(rgm > raiz->dado.rgm) {
     return pesquisarNaArvore(rgm, raiz->dir);
   } else {
     return pesquisarNaArvore(rgm, raiz->esq);
@@ -102,9 +104,9 @@ void removerValor(t_no ** raiz, int valor) {
     return;
   }
 
-  if (valor < (*raiz)->dado) {
+  if (valor < (*raiz)->dado.rgm) {
     removerValor(&((*raiz)->esq), valor);
-  } else if (valor > (*raiz)->dado) {
+  } else if (valor > (*raiz)->dado.rgm) {
     removerValor(&((*raiz)->dir), valor);
   } else {
     // Encontrou o nó a ser removido
@@ -112,21 +114,21 @@ void removerValor(t_no ** raiz, int valor) {
 
     // Caso 1: Sem filhos
     if (no->esq == NULL && no->dir == NULL) {
-      printf("Valor removido: %d\n", no->dado);
+      printf("Valor removido: %d\n", no->dado.rgm);
       free(no);
       *raiz = NULL;
     }
 
     // Caso 2: Um filho à direita
     else if (no->esq == NULL) {
-      printf("Valor removido: %d\n", no->dado);
+      printf("Valor removido: %d\n", no->dado.rgm);
       *raiz = no->dir;
       free(no);
     }
 
     // Caso 2: Um filho à esquerda
     else if (no->dir == NULL) {
-      printf("Valor removido: %d\n", no->dado);
+      printf("Valor removido: %d\n", no->dado.rgm);
       *raiz = no->esq;
       free(no);
     }
@@ -135,52 +137,47 @@ void removerValor(t_no ** raiz, int valor) {
     else {
       t_no *sucessor = encontrarSucessor(no->dir);
       no->dado = sucessor->dado;
-      removerValor(&(no->dir), sucessor->dado);
+      removerValor(&(no->dir), sucessor->dado.rgm);
     }
   }
 }
 
 void listagemPreOrdem(t_no * raiz) {
-  if (raiz != NULL) {
-    printf("%d ", raiz->dado);
+  if (raiz != NULL && raiz->dado.rgm >= 0) {
+    printf("%d - %s\n", raiz->dado.rgm, raiz->dado.nome);
     listagemPreOrdem(raiz->esq);
     listagemPreOrdem(raiz->dir);
   }
 }
 
 void listagemInOrdem(t_no * raiz) {
-  if (raiz != NULL) {
+  if (raiz != NULL && raiz->dado.rgm >= 0) {
     listagemInOrdem(raiz->esq);
-    printf("%d ", raiz->dado);
+    printf("%d - %s\n", raiz->dado.rgm, raiz->dado.nome);
     listagemInOrdem(raiz->dir);
   }
 }
 
 void listagemPosOrdem(t_no * raiz) {
-  if (raiz != NULL) {
+  if (raiz != NULL && raiz->dado.rgm >= 0) {
     listagemPosOrdem(raiz->esq);
     listagemPosOrdem(raiz->dir);
-    printf("%d ", raiz->dado);
+    printf("%d - %s\n", raiz->dado.rgm, raiz->dado.nome);
   }
 }
 
 void listagemGraficamente(t_no* raiz, int espaco) {
-  if (raiz == NULL) return;
+  if (raiz == NULL || raiz->dado.rgm < 0) return;
 
   espaco += 5;
-
-  // Primeiro desenha o lado direito
   listagemGraficamente(raiz->dir, espaco);
 
-  // Imprime o nó atual com indentação
   printf("\n");
   for (int i = 5; i < espaco; i++) {
     printf(" ");
   }
-  
-  printf("%d\n", raiz->dado);
+  printf("%d - %s\n", raiz->dado.rgm, raiz->dado.nome);
 
-  // Depois desenha o lado esquerdo
   listagemGraficamente(raiz->esq, espaco);
 }
 
@@ -254,6 +251,7 @@ void menuDeListagem(t_arvore raiz) {
   
 void menu(t_arvore raiz) {
   int opcao = 0, rgm = 0;
+  char nome[80];
 
   printf("------------------------------------\n\n");
   printf("ALUNO: %s\n", "NATTAN SILVA");
@@ -277,13 +275,18 @@ void menu(t_arvore raiz) {
       printf("INSERIR UM NO\n");
       printf("Digite o RGM: ");
       scanf("%d", &rgm);
-      
+      printf("Digite o nome: ");
+      fflush(stdin);
+      fgets(nome, sizeof(nome), stdin);
+      nome[strcspn(nome, "\n")] = 0; // Remove o \n
+
       if(raiz == NULL) {
         raiz = criarNo();
-        raiz->dado = rgm;
+        raiz->dado.rgm = rgm;
+        strcpy(raiz->dado.nome, nome);
         printf("RGM %d inserido na raiz com sucesso\n", rgm);
       }else {
-        inserirNaArvore(rgm, raiz);
+        inserirNaArvore(rgm, nome, raiz);
       }
 
       menu(raiz);
