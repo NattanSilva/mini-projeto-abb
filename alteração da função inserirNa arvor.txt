@@ -1,0 +1,44 @@
+alteração da função inserirNa arvore p ela procurar o lugar de inserir pelo rgm.
+void menu(t_arvore *raiz) {
+  int opcao = 0, rgm = 0;
+  char nome[80];
+
+  printf("Digite uma opção: \n\n");
+  printf("ALUNO: %s\n", "NATTAN SILVA");
+  printf("DISCIPLINA: ESTRUTURA DE DADOS I\n");
+  printf("PROFESSOR: WALACE BONFIM\n\n");
+  printf("----------EDITOR DE ÁRVORE----------\n");
+  printf("1 - INSERIR - fornecer RGM e Nome\n");
+  printf("2 - REMOVER UM NO - fornecer o RGM a remover\n");
+  printf("3 - PESQUISAR - fornecer o RGM a pesquisar\n");
+  printf("4 - ESVAZIAR A ARVORE\n");
+  printf("5 - EXIBIR A ARVORE - tres opcoes: PRE, IN ou POS\n");
+  printf("0 - SAIR\n");
+  printf("------------------------------------\n");
+  printf("DIGITE SUA OPCAO: ");
+  scanf("%d", &rgm);
+  fflush(stdin);
+  fgets(nome, sizeoff(nome), stdin);
+  nome[strcspn(nome, "\n")] = 0;
+
+  switch (opcao) {
+    case 1:
+      printf("------------------------------------\n");
+      printf("INSERIR UM NO\n");
+      printf("Digite o RGM: ");
+      scanf("%d", &rgm);
+      printf("Digite o nome: ");
+      fflush(stdin);
+      fgets(nome, sizeof(nome), stdin);
+      nome[strcspn(nome, "\n")] = 0; // Remove o \n
+
+      if(raiz == NULL) {
+        *raiz = criarNo();
+        (*raiz)->dado.rgm = rgm;
+        strcpy((*raiz)->dado.nome, nome);
+        printf("RGM %d inserido na raiz com sucesso\n", rgm);
+      }else {
+        inserirNaArvore(rgm, nome,*raiz);
+      }
+
+      menu(raiz);
