@@ -66,20 +66,31 @@ int inserirNaArvore (int rgm, char *nome, t_no * raiz) {
   return 1;
 }
 
-int pesquisarNaArvore (int rgm, t_no * raiz) {
-  if(raiz == NULL || raiz->dado.rgm < 0) {
+
+
+
+//pesquisa por 1 aluno
+int pesquisaNo (int rgm, t_no * arvore) {
+
+  if(arvore == NULL || arvore->dado.rgm < 0)
     return -1;
+
+  if (arvore->dado.rgm == rgm) {
+
+    printf("Nome: %s, ", arvore->dado.nome);
+    return arvore->dado.rgm;
+
   }
-  
-  if (raiz->dado.rgm == rgm) {
-    return raiz->dado.rgm;
-  } else if(rgm > raiz->dado.rgm) {
-    return pesquisarNaArvore(rgm, raiz->dir);
-  } else {
-    return pesquisarNaArvore(rgm, raiz->esq);
-  }
-  
+
+  else if(rgm > arvore->dado.rgm)
+     return pesquisaNo(rgm, arvore->dir);
+
+  else
+    return pesquisaNo(rgm, arvore->esq);
 }
+
+
+
 
 t_no * encontrarSucessor(t_no *raiz) {
   if (raiz == NULL) return NULL;
@@ -92,7 +103,7 @@ t_no * encontrarSucessor(t_no *raiz) {
   return atual;
 }
 
-// Função para remover um valor da arvore
+// Função para remover um valor da árvore
 void removerValor(t_no ** raiz, int valor) {
   if (*raiz == NULL) {
     printf("Valor não encontrado na árvore.\n");
@@ -197,7 +208,7 @@ void menuDeListagem(t_arvore raiz) {
     case 1:
       printf("------------------------------------\n");
       printf("PRE\n");
-      
+
       if(raiz == NULL) {
         printf("Arvore vazia\n");
         break;
@@ -205,7 +216,7 @@ void menuDeListagem(t_arvore raiz) {
         listagemPreOrdem(raiz);
         printf("\n");
       }
-      
+
       break;
     case 2:
       printf("IN\n");
@@ -217,7 +228,7 @@ void menuDeListagem(t_arvore raiz) {
         listagemInOrdem(raiz);
         printf("\n");
       }
-      
+
       break;
     case 3:
       printf("POS\n");
@@ -248,7 +259,7 @@ void menuDeListagem(t_arvore raiz) {
       break;
   }
 }
-  
+
 void menu(t_arvore raiz) {
   int opcao = 0, rgm = 0;
   char nome[80];
@@ -294,7 +305,7 @@ void menu(t_arvore raiz) {
     case 2:
       printf("------------------------------------\n");
       printf("REMOVER UM NO\n");
-      
+
       if(raiz == NULL) {
         printf("Arvore vazia\n");
       } else {
@@ -306,17 +317,20 @@ void menu(t_arvore raiz) {
       menu(raiz);
       break;
     case 3:
-      printf("------------------------------------\n");
-      printf("PESQUISAR UM NO\n");
-      printf("Digite o RGM: ");
-      scanf("%d", &rgm);
-      int valorBuscado = pesquisarNaArvore(rgm, raiz);
 
-      if (valorBuscado < 0) {
-        printf("RGM %d nao encontrado na arvore\n", rgm);
-      } else {
-        printf("RGM %d encontrado na arvore\n", valorBuscado);
-      }
+      printf("------------------------------------\n");
+      printf("Pesquisar um Aluno\n");
+      printf("Digite o RGM:");
+      scanf("%d", &rgm);
+
+      int valorBuscado = pesquisaNo(rgm, raiz);
+
+      if (valorBuscado < 0)
+        printf("RGM %d nao foi encontrado na lista de aluno\n", rgm);
+
+      else
+        printf("RGM: %d foi encontrado na lista de alunos\n", valorBuscado);
+
 
       menu(raiz);
       break;
@@ -353,6 +367,6 @@ int main() {
   menu(raiz);
 
   fclose(arquivo);
-  
+
   return 0;
 }
