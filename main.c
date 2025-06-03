@@ -103,54 +103,54 @@ t_no * encontrarSucessor(t_no *raiz) {
   return atual;
 }
 
-// Função para remover um valor da árvore
-void removerValor(t_no ** raiz, int valor) {
-  if (*raiz == NULL) {
-    printf("Valor não encontrado na árvore.\n");
-    return;
-  }
-
-  if (valor < 0) {
-    printf("Valor inválido\n");
-    return;
-  }
-
-  if (valor < (*raiz)->dado.rgm) {
-    removerValor(&((*raiz)->esq), valor);
-  } else if (valor > (*raiz)->dado.rgm) {
-    removerValor(&((*raiz)->dir), valor);
-  } else {
-    // Encontrou o nó a ser removido
-    t_no *no = *raiz;
-
-    // Caso 1: Sem filhos
-    if (no->esq == NULL && no->dir == NULL) {
-      printf("Valor removido: %d\n", no->dado.rgm);
-      free(no);
-      *raiz = NULL;
+// Responsável por remover um aluno da árvore dado o RGM
+void removerAlunoPorRGM(t_no ** raiz, int rgm) {
+    if (*raiz == NULL) {
+        printf("Aluno com RGM %d não encontrado na árvore.\n", rgm);
+        return;
     }
 
-    // Caso 2: Um filho à direita
-    else if (no->esq == NULL) {
-      printf("Valor removido: %d\n", no->dado.rgm);
-      *raiz = no->dir;
-      free(no);
+    if (rgm < 0) {
+        printf("RGM inválido.\n");
+        return;
     }
 
-    // Caso 2: Um filho à esquerda
-    else if (no->dir == NULL) {
-      printf("Valor removido: %d\n", no->dado.rgm);
-      *raiz = no->esq;
-      free(no);
-    }
+    if (rgm < (*raiz)->dado.rgm) {
+        removerAlunoPorRGM(&((*raiz)->esq), rgm);
+    } else if (rgm > (*raiz)->dado.rgm) {
+        removerAlunoPorRGM(&((*raiz)->dir), rgm);
+    } else {
+        // Encontrou o nó a ser removido
+        t_no *no = *raiz;
 
-    // Caso 3: Dois filhos
-    else {
-      t_no *sucessor = encontrarSucessor(no->dir);
-      no->dado = sucessor->dado;
-      removerValor(&(no->dir), sucessor->dado.rgm);
+        // Caso 1: Sem filhos
+        if (no->esq == NULL && no->dir == NULL) {
+            printf("Aluno com RGM %d removido com sucesso.\n", no->dado.rgm);
+            free(no);
+            *raiz = NULL;
+        }
+
+        // Caso 2: Um filho à direita
+        else if (no->esq == NULL) {
+            printf("Aluno com RGM %d removido com sucesso.\n", no->dado.rgm);
+            *raiz = no->dir;
+            free(no);
+        }
+
+        // Caso 2: Um filho à esquerda
+        else if (no->dir == NULL) {
+            printf("Aluno com RGM %d removido com sucesso.\n", no->dado.rgm);
+            *raiz = no->esq;
+            free(no);
+        }
+
+        // Caso 3: Dois filhos
+        else {
+            t_no *sucessor = encontrarSucessor(no->dir);
+            no->dado = sucessor->dado;
+            removerAlunoPorRGM(&(no->dir), sucessor->dado.rgm);
+        }
     }
-  }
 }
 
 void listagemPreOrdem(t_no * raiz) {
@@ -302,16 +302,16 @@ void menu(t_arvore raiz) {
 
       menu(raiz);
       break;
-    case 2:
+        case 2:
       printf("------------------------------------\n");
       printf("REMOVER UM NO\n");
-
+      
       if(raiz == NULL) {
         printf("Arvore vazia\n");
       } else {
         printf("Digite o RGM: ");
         scanf("%d", &rgm);
-        removerValor(&raiz, rgm);
+        removerAlunoPorRGM(&raiz, rgm);  // Chama a função remover RGM
       }
 
       menu(raiz);
