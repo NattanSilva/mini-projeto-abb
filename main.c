@@ -180,11 +180,11 @@ void listagemPosOrdem(t_no * raiz) {
 void listagemGraficamente(t_no* raiz, int espaco) {
   if (raiz == NULL || raiz->dado.rgm < 0) return;
 
-  espaco += 5;
+  espaco += 8;
   listagemGraficamente(raiz->dir, espaco);
 
   printf("\n");
-  for (int i = 5; i < espaco; i++) {
+  for (int i = 8; i < espaco; i++) {
     printf(" ");
   }
   printf("%d - %s\n", raiz->dado.rgm, raiz->dado.nome);
@@ -302,7 +302,7 @@ void menu(t_arvore raiz) {
 
       menu(raiz);
       break;
-        case 2:
+    case 2:
       printf("------------------------------------\n");
       printf("REMOVER UM NO\n");
       
