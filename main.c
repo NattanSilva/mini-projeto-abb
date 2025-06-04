@@ -27,7 +27,7 @@ t_no * criarNo () {
   return no;
 }
 
-int inserirNaArvore (int rgm, char *nome, t_no * raiz) {
+int inserirNaArvore (int rgm, char * nome, t_no * raiz) {
   if(raiz == NULL) {
     printf("No invalido ou nulo\n");
     return -1;
@@ -70,16 +70,13 @@ int inserirNaArvore (int rgm, char *nome, t_no * raiz) {
 
 
 //pesquisa por 1 aluno
-int pesquisaNo (int rgm, t_no * arvore) {
+t_no * pesquisaNo (int rgm, t_no * arvore) {
 
   if(arvore == NULL || arvore->dado.rgm < 0)
-    return -1;
+    return NULL;
 
   if (arvore->dado.rgm == rgm) {
-
-    printf("Nome: %s, ", arvore->dado.nome);
-    return arvore->dado.rgm;
-
+    return arvore;
   }
 
   else if(rgm > arvore->dado.rgm)
@@ -180,11 +177,11 @@ void listagemPosOrdem(t_no * raiz) {
 void listagemGraficamente(t_no* raiz, int espaco) {
   if (raiz == NULL || raiz->dado.rgm < 0) return;
 
-  espaco += 8;
+  espaco += 12;
   listagemGraficamente(raiz->dir, espaco);
 
   printf("\n");
-  for (int i = 8; i < espaco; i++) {
+  for (int i = 12; i < espaco; i++) {
     printf(" ");
   }
   printf("%d - %s\n", raiz->dado.rgm, raiz->dado.nome);
@@ -323,13 +320,13 @@ void menu(t_arvore raiz) {
       printf("Digite o RGM:");
       scanf("%d", &rgm);
 
-      int valorBuscado = pesquisaNo(rgm, raiz);
+      t_no * valorBuscado = pesquisaNo(rgm, raiz);
 
-      if (valorBuscado < 0)
+      if (valorBuscado == NULL)
         printf("RGM %d nao foi encontrado na lista de aluno\n", rgm);
 
       else
-        printf("RGM: %d foi encontrado na lista de alunos\n", valorBuscado);
+        printf("Nome %s - RGM: %d foi encontrado na lista de alunos\n", valorBuscado->dado.nome, valorBuscado->dado.rgm);
 
 
       menu(raiz);
