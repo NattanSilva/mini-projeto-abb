@@ -16,30 +16,32 @@ typedef struct no {
 
 typedef t_no * t_arvore;
 
-t_no * criarNo () {
-  t_no * no = (t_no*) malloc(sizeof(t_no));
-
-  if (no) {
-    no->dado.rgm = -1;
-    no->esq = no->dir = NULL;
+t_no *criarNo() {
+  t_no * novo = (t_no *)malloc(sizeof(t_no));
+  if (novo == NULL) {
+    printf("Erro ao alocar memória\n");
+    exit(1);
   }
-
-  return no;
+  novo->dado.rgm = -1;
+  novo->dado.nome[0] = '\0';
+  novo->esq = NULL;
+  novo->dir = NULL;
+  return novo;
 }
 
-int inserirNaArvore (int rgm, char * nome, t_no * raiz) {
-  if(raiz == NULL) {
-    printf("No invalido ou nulo\n");
+int inserirNaArvore(int rgm, char *nome, t_no *raiz) {
+  if (raiz == NULL) {
+    printf("Erro: nó raiz nulo\n");
     return -1;
   }
 
-  if(rgm < 0) {
-    printf("RGM invalido\n");
+  if (rgm < 0) {
+    printf("RGM inválido\n");
     return -1;
   }
 
-  if(rgm > raiz->dado.rgm) {
-    if(raiz->dir == NULL) {
+  if (rgm > raiz->dado.rgm) {
+    if (raiz->dir == NULL) {
       raiz->dir = criarNo();
       raiz->dir->dado.rgm = rgm;
       strcpy(raiz->dir->dado.nome, nome);
@@ -47,8 +49,8 @@ int inserirNaArvore (int rgm, char * nome, t_no * raiz) {
     } else {
       return inserirNaArvore(rgm, nome, raiz->dir);
     }
-  } else if(rgm < raiz->dado.rgm) {
-    if(raiz->esq == NULL) {
+  } else if (rgm < raiz->dado.rgm) {
+    if (raiz->esq == NULL) {
       raiz->esq = criarNo();
       raiz->esq->dado.rgm = rgm;
       strcpy(raiz->esq->dado.nome, nome);
@@ -57,11 +59,9 @@ int inserirNaArvore (int rgm, char * nome, t_no * raiz) {
       return inserirNaArvore(rgm, nome, raiz->esq);
     }
   } else {
-    printf("RGM %d ja existe na arvore\n", rgm);
+    printf("RGM %d já existe\n", rgm);
     return 0;
   }
-
-  return 1;
 }
 
 
@@ -275,6 +275,7 @@ t_no * carregarArvoreDoArquivo(FILE * arquivo) {
   }
 
   if (raiz->dado.rgm == -1) {
+    free(raiz);
     return NULL;
   }
 
@@ -282,17 +283,17 @@ t_no * carregarArvoreDoArquivo(FILE * arquivo) {
 }
 
 void menu() {
-  FILE * arquivo = fopen("dados.txt", "r");
+  FILE * arquivo = fopen("dados.txt", "a+");
 
   if(arquivo == NULL) {
     arquivo = fopen("dados.txt", "w");
     if (arquivo == NULL) {
       printf("Erro ao criar o arquivo '%s'\n", "dados.txt");
-      return 1;
+      return;
     } else {
       printf("Arquivo '%s' criado com sucesso (estava ausente)\n", "dados.txt");
       fclose(arquivo);
-      arquivo = fopen("dados.txt", "r");
+      arquivo = fopen("dados.txt", "a+");
     }
   }
 
@@ -335,8 +336,11 @@ void menu() {
         inserirNaArvore(rgm, nome, raiz);
       }
 
+      // escreve no arquivo de texto
+      fprintf(arquivo, "%d - %s\n", rgm, nome);
+      fflush(arquivo);
       printf("RGM %d - %s inserido com sucesso\n", rgm, nome);
-
+      fclose(arquivo);
       menu(arquivo);
       break;
     case 2:
@@ -349,6 +353,7 @@ void menu() {
         printf("Digite o RGM: ");
         scanf("%d", &rgm);
         removerAlunoPorRGM(&raiz, rgm);  // Chama a função remover RGM
+        removerLinhaDoArquivo("dados.txt", rgm);
       }
 
       menu(arquivo);
