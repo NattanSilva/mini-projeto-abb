@@ -43,7 +43,6 @@ int inserirNaArvore (int rgm, char * nome, t_no * raiz) {
       raiz->dir = criarNo();
       raiz->dir->dado.rgm = rgm;
       strcpy(raiz->dir->dado.nome, nome);
-      printf("RGM %d inserido na direita com sucesso\n", rgm);
       return 1;
     } else {
       return inserirNaArvore(rgm, nome, raiz->dir);
@@ -53,7 +52,6 @@ int inserirNaArvore (int rgm, char * nome, t_no * raiz) {
       raiz->esq = criarNo();
       raiz->esq->dado.rgm = rgm;
       strcpy(raiz->esq->dado.nome, nome);
-      printf("RGM %d inserido na esquerda com sucesso\n", rgm);
       return 1;
     } else {
       return inserirNaArvore(rgm, nome, raiz->esq);
@@ -85,9 +83,6 @@ t_no * pesquisaNo (int rgm, t_no * arvore) {
   else
     return pesquisaNo(rgm, arvore->esq);
 }
-
-
-
 
 t_no * encontrarSucessor(t_no *raiz) {
   if (raiz == NULL) return NULL;
@@ -174,7 +169,7 @@ void listagemPosOrdem(t_no * raiz) {
   }
 }
 
-void listagemGraficamente(t_no* raiz, int espaco) {
+void listagemGraficamente(t_no * raiz, int espaco) {
   if (raiz == NULL || raiz->dado.rgm < 0) return;
 
   espaco += 12;
@@ -189,7 +184,7 @@ void listagemGraficamente(t_no* raiz, int espaco) {
   listagemGraficamente(raiz->esq, espaco);
 }
 
-void menuDeListagem(t_arvore raiz) {
+void menuDeListagem(t_no * raiz) {
   int opcao = 0;
   printf("------------------------------------\n");
   printf("EXIBIR A ARVORE\n");
@@ -257,9 +252,53 @@ void menuDeListagem(t_arvore raiz) {
   }
 }
 
-void menu(t_arvore raiz) {
+t_no * carregarArvoreDoArquivo(FILE * arquivo) {
+  char linha[150];
+  int rgm;
+  char nome[80];
+
+  t_no * raiz = criarNo();
+  raiz->dado.rgm = -1;
+
+  while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+    linha[strcspn(linha, "\n")] = '\0';
+
+    // Lê a linha no formato "1234 - Nome do Aluno"
+    if (sscanf(linha, "%d - %[^\n]", &rgm, nome) == 2) {
+      if (raiz->dado.rgm == -1) {
+        raiz->dado.rgm = rgm;
+        strcpy(raiz->dado.nome, nome);
+      } else {
+        inserirNaArvore(rgm, nome, raiz);
+      }
+    }
+  }
+
+  if (raiz->dado.rgm == -1) {
+    return NULL;
+  }
+
+  return raiz;
+}
+
+void menu() {
+  FILE * arquivo = fopen("dados.txt", "r");
+
+  if(arquivo == NULL) {
+    arquivo = fopen("dados.txt", "w");
+    if (arquivo == NULL) {
+      printf("Erro ao criar o arquivo '%s'\n", "dados.txt");
+      return 1;
+    } else {
+      printf("Arquivo '%s' criado com sucesso (estava ausente)\n", "dados.txt");
+      fclose(arquivo);
+      arquivo = fopen("dados.txt", "r");
+    }
+  }
+
   int opcao = 0, rgm = 0;
   char nome[80];
+  t_no * raiz = carregarArvoreDoArquivo(arquivo);
 
   printf("------------------------------------\n\n");
   printf("ALUNO: %s\n", "NATTAN SILVA");
@@ -292,12 +331,13 @@ void menu(t_arvore raiz) {
         raiz = criarNo();
         raiz->dado.rgm = rgm;
         strcpy(raiz->dado.nome, nome);
-        printf("RGM %d inserido na raiz com sucesso\n", rgm);
       }else {
         inserirNaArvore(rgm, nome, raiz);
       }
 
-      menu(raiz);
+      printf("RGM %d - %s inserido com sucesso\n", rgm, nome);
+
+      menu(arquivo);
       break;
     case 2:
       printf("------------------------------------\n");
@@ -311,7 +351,7 @@ void menu(t_arvore raiz) {
         removerAlunoPorRGM(&raiz, rgm);  // Chama a função remover RGM
       }
 
-      menu(raiz);
+      menu(arquivo);
       break;
     case 3:
 
@@ -329,7 +369,7 @@ void menu(t_arvore raiz) {
         printf("Nome %s - RGM: %d foi encontrado na lista de alunos\n", valorBuscado->dado.nome, valorBuscado->dado.rgm);
 
 
-      menu(raiz);
+      menu(arquivo);
       break;
     case 4:
       printf("------------------------------------\n");
@@ -337,7 +377,7 @@ void menu(t_arvore raiz) {
       break;
     case 5:
       menuDeListagem(raiz);
-      menu(raiz);
+      menu(arquivo);
       break;
     case 0:
       printf("------------------------------------\n");
@@ -346,24 +386,15 @@ void menu(t_arvore raiz) {
     default:
       printf("------------------------------------\n");
       printf("OPCAO INVALIDA\n");
-      menu(raiz);
+      menu(arquivo);
       break;
   }
 }
 
 int main() {
   setlocale(LC_ALL, "Portuguese_Brazil");
-  FILE *arquivo = fopen("dados.txt", "w");
 
-  if(arquivo == NULL) {
-    printf("Erro ao abrir o arquivo\n");
-    return 1;
-  }
-
-  t_arvore raiz = NULL;
-  menu(raiz);
-
-  fclose(arquivo);
+  menu();
 
   return 0;
 }
