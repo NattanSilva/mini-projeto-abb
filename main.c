@@ -282,6 +282,53 @@ t_no * carregarArvoreDoArquivo(FILE * arquivo) {
   return raiz;
 }
 
+void removerLinhaDoArquivo(const char * nomeArquivo, int rgm) {
+  FILE * original = fopen(nomeArquivo, "r");
+  FILE * temporario = fopen("temp.txt", "w");
+
+  if (original == NULL || temporario == NULL) {
+    perror("Erro ao abrir os arquivos");
+    return;
+  }
+
+  char linha[200];
+  int rgmLinha;
+
+  while (fgets(linha, sizeof(linha), original)) {
+    if (sscanf(linha, "%d -", &rgmLinha) == 1) {
+      if (rgmLinha == rgm) {
+        continue;
+      }
+    }
+    fputs(linha, temporario);
+  }
+
+  fclose(original);
+  fclose(temporario);
+
+  remove(nomeArquivo);
+  rename("temp.txt", nomeArquivo);
+}
+
+
+void esvaziarArvore(t_no * raiz) {
+  if (raiz == NULL) return;
+
+  esvaziarArvore(raiz->esq);
+  esvaziarArvore(raiz->dir);
+
+  free(raiz);
+}
+
+void limparArquivo() {
+  FILE * arquivo = fopen("dados.txt", "w");
+  if (arquivo != NULL) {
+    fclose(arquivo);  // Abrir em modo "w" já apaga o conteúdo
+  } else {
+    perror("Erro ao abrir dados.txt para limpeza");
+  }
+}
+
 void menu() {
   FILE * arquivo = fopen("dados.txt", "a+");
 
@@ -299,10 +346,15 @@ void menu() {
 
   int opcao = 0, rgm = 0;
   char nome[80];
+  char usuario[100];
   t_no * raiz = carregarArvoreDoArquivo(arquivo);
 
+  printf("Digite seu nome de usuário: ");
+  scanf("%[^\n]", usuario);
+
+
   printf("------------------------------------\n\n");
-  printf("ALUNO: %s\n", "NATTAN SILVA");
+  printf("ALUNO: %s\n", usuario);
   printf("DISCIPLINA: ESTRUTURA DE DADOS I\n");
   printf("PROFESSOR: WALACE BONFIM\n\n");
   printf("----------EDITOR DE ÁRVORE----------\n");
@@ -379,6 +431,10 @@ void menu() {
     case 4:
       printf("------------------------------------\n");
       printf("ESVAZIAR A ARVORE\n");
+      esvaziarArvore(raiz);
+      limparArquivo();
+      printf("Arvore esvaziada e arquivo limpo");
+      menu(arquivo);
       break;
     case 5:
       menuDeListagem(raiz);
