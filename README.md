@@ -4,9 +4,9 @@
 <br>
 [x] - Implementar 1,2,3 e 5 com arvore binária simples;
 <br>
-[] - Adicionar o t_elemento no lugar de dado e adapatar as funções 1,2,3 e 5;
+[x] - Adicionar o t_elemento no lugar de dado e adapatar as funções 1,2,3 e 5;
 <br>
-[] - Carregar dados do arquivo de dados.txt e adapatar a função de criar e remover do arquivo de texto
+[x] - Carregar dados do arquivo de dados.txt e adapatar a função de criar e remover do arquivo de texto
 <br>
-[] - Adiconar a funcionalidade 4 do menu
+[x] - Adiconar a funcionalidade 4 do menu
 <br>
